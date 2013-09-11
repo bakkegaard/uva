@@ -1,9 +1,8 @@
-var usernames= new Array("bakkegaard","casper91","gmark","Bettedaniel");
+var usernames= new Array("bakkegaard","casper91","Bettedaniel");
 var persons= new Array();
 
 function update(){
 	persons.sort(function(a,b){return b.count-a.count});
-	console.log(persons);
 
 	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Score</th> </tr>", end="</table>";
 	returnValue= start;
@@ -27,11 +26,9 @@ function update(){
 
 	start+= end;
 
-	console.log(start);
 
 	$("#table").remove();
 	$("#input").after(start);
-	console.log("done");
 
 }
 
@@ -81,4 +78,14 @@ for(var i=0;i<usernames.length;i++){
 
 $(function(){
 	$("#main").prepend("<h1>UVA scoreboard</h1>");
+
+	$("#input").keydown(function (e) {
+    if (e.keyCode == 13) {
+       getData($("#input").val());
+		 $("#input").val("");
+    }
+	});
 })
+
+
+
