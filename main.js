@@ -77,8 +77,6 @@ for(var i=0;i<usernames.length;i++){
 }
 
 $(function(){
-	$("#main").prepend("<h1>UVA scoreboard</h1>");
-
 	$("#input").keydown(function (e) {
     if (e.keyCode == 13) {
        getData($("#input").val());
