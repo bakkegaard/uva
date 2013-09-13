@@ -20,7 +20,7 @@ function update(){
 		start+= "</td>";
 
 		start+= "<td>";
-		start+= persons[i]["userName"] + " ("+persons[i]["name"]+")";
+		start+= "<a target=\"_blank\" href=\"http://uhunt.felix-halim.net/id/" + persons[i]["id"] + "\">" + persons[i]["userName"] + " ("+persons[i]["name"]+")</a>";
 		start+= "</td>";
 
 		start+= "<td>";
@@ -39,7 +39,7 @@ function update(){
 	$("#input").after(start);
 }
 
-function buildPerson(data){
+function buildPerson(data, id){
 	//Create empty object
 	var temp={};
 
@@ -48,6 +48,7 @@ function buildPerson(data){
 	temp.accept= new Array()
 	temp.count= 0;
 	temp.vissible= true;
+	temp.id= id;
 
 	//Run through the JSON and build an array of acceptet submissions
 	for(var i=0;i< data["subs"].length;i++){
@@ -77,18 +78,18 @@ function getData(username){
 	//Make ajax call, getting id
 	$.ajax({
 		url: s
-		}).done(function(data){
+		}).done(function(id){
 			//When id is returned, make call for info
 
 			//URL for getting userinfo
-			var s= "http://uhunt.felix-halim.net/api/subs-user/" + data;
+			var s= "http://uhunt.felix-halim.net/api/subs-user/" + id;
 
 			$.ajax({
 			url: s
 			}).done(function ( data ) {
 
 				//When info is returned, call buildPerson on info
-				buildPerson(data);
+				buildPerson(data, id);
 			})
 		})
 };
