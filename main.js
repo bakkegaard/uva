@@ -8,8 +8,10 @@ function update(){
 	//Sort the array with regards to the accept count
 	persons.sort(function(a,b){return b.count-a.count});
 
+	var currentTime= new Date().getTime();
+
 	//the begining of the table
-	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Score</th> </tr>", end="</table>";
+	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Last accepted</th> <th>Score</th> </tr>", end="</table>";
 
 	//Forloop that runs through every person on the persons array, and build an entry in the table
 	for(var i=0;i<persons.length;i++){
@@ -21,6 +23,10 @@ function update(){
 
 		start+= "<td>";
 		start+= "<a target=\"_blank\" href=\"http://uhunt.felix-halim.net/id/" + persons[i]["id"] + "\">" + persons[i]["userName"] + " ("+persons[i]["name"]+")</a>";
+		start+= "</td>";
+
+		start+= "<td>";
+		start+=  Math.floor(((currentTime/1000)-persons[i].lastSubmission)/(60*60*24)) + " days ago"; 
 		start+= "</td>";
 
 		start+= "<td>";
@@ -49,10 +55,15 @@ function buildPerson(data, id){
 	temp.count= 0;
 	temp.vissible= true;
 	temp.id= id;
+	temp.lastSubmission=0;
 
 	//Run through the JSON and build an array of acceptet submissions
 	for(var i=0;i< data["subs"].length;i++){
 		if(data["subs"][i][2]===90){
+			
+			//find last acceptet submission
+			temp.lastSubmission= Math.max(data["subs"][i][4],temp.lastSubmission);
+
 			if(temp.accept.indexOf(data["subs"][i][1])==-1){
 				temp.accept.push(data["subs"][i][1]);
 				temp.count++;
@@ -61,7 +72,7 @@ function buildPerson(data, id){
 		}
 
 	}
-	
+
 	//Add newly created person to the persons array
 	persons.push(temp);
 
