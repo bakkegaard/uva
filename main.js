@@ -4,6 +4,15 @@ var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg"
 //Array for persons
 var persons= new Array();
 
+function isInPersons(name){
+	for(var i=0;i<persons.length;i++){
+		//console.log(p["name"] + " "+ name);
+		if(persons[i]["userName"]===name) return true;
+
+	}
+	return false;
+}
+
 function update(){
 	//Sort the array with regards to the accept count
 	persons.sort(function(a,b){return b.count-a.count});
@@ -89,7 +98,9 @@ function buildPerson(data, id){
 }
 
 function getData(username){
-	
+
+	if(isInPersons(username)) return;
+
 	//URL for getting user id
 	var s="http://uhunt.felix-halim.net/api/uname2uid/"+ username;
 
@@ -130,6 +141,3 @@ $(function(){
     }
 	});
 })
-
-
-
