@@ -15,6 +15,13 @@ function update(){
 
 	//Forloop that runs through every person on the persons array, and build an entry in the table
 	for(var i=0;i<persons.length;i++){
+
+		//variable for last accepted
+		var daysAgo= Math.floor(((currentTime/1000)-persons[i].lastSubmission)/(60*60*24))
+
+		//make sure not negative
+		if(daysAgo<0) daysAgo= 0;
+
 		start+= "<tr>";
 		
 		start+= "<td>";
@@ -26,7 +33,7 @@ function update(){
 		start+= "</td>";
 
 		start+= "<td>";
-		start+=  Math.floor(((currentTime/1000)-persons[i].lastSubmission)/(60*60*24)) + " days ago"; 
+		start+=  daysAgo + " days ago"; 
 		start+= "</td>";
 
 		start+= "<td>";
