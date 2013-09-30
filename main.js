@@ -1,5 +1,5 @@
 //Array for persons to be looked up at init
-var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg");
+var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail");
 
 //Array for persons
 var persons= new Array();
