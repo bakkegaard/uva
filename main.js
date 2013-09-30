@@ -8,7 +8,6 @@ function isInPersons(name){
 	for(var i=0;i<persons.length;i++){
 		//console.log(p["name"] + " "+ name);
 		if(persons[i]["userName"]===name) return true;
-
 	}
 	return false;
 }
@@ -20,7 +19,7 @@ function update(){
 	var currentTime= new Date().getTime();
 
 	//the begining of the table
-	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Last accepted</th> <th>Score</th> </tr>", end="</table>";
+	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Last accepted</th> <th>Score</th> <th>2d</th> <th>7d</th><th>31d</th></tr>", end="</table>";
 
 	//Forloop that runs through every person on the persons array, and build an entry in the table
 	for(var i=0;i<persons.length;i++){
@@ -48,6 +47,18 @@ function update(){
 		start+= "<td>";
 		start+= persons[i]["count"];
 		start+= "</td>";
+
+		start+= "<td>";
+		start+= persons[i]["twoDays"];
+		start+="</td>";
+
+		start+= "<td>";
+		start+= persons[i]["week"];
+		start+="</td>";
+
+		start+= "<td>";
+		start+= persons[i]["month"];
+		start+="</td>";
 		
 		start+="</tr>";
 	}
@@ -65,6 +76,12 @@ function buildPerson(data, id){
 	//Create empty object
 	var temp={};
 
+	var currentTime= new Date().getTime()/1000;
+
+	var twoDays= (currentTime)-(60*60*24*2)
+	var week= (currentTime)-(60*60*24*7)
+	var month= (currentTime)-(60*60*24*31)
+
 	temp.name= data["name"];
 	temp.userName= data["uname"];
 	temp.accept= new Array()
@@ -72,6 +89,9 @@ function buildPerson(data, id){
 	temp.vissible= true;
 	temp.id= id;
 	temp.lastSubmission=0;
+	temp.twoDays=0;
+	temp.week=0;
+	temp.month=0;
 
 	//Run through the JSON and build an array of acceptet submissions
 	for(var i=0;i< data["subs"].length;i++){
@@ -81,6 +101,13 @@ function buildPerson(data, id){
 			temp.lastSubmission= Math.max(data["subs"][i][4],temp.lastSubmission);
 
 			if(temp.accept.indexOf(data["subs"][i][1])==-1){
+				if(data["subs"][i][4]>month){
+					temp.month++;
+					if(data["subs"][i][4]>week){
+						temp.week++;
+						if(data["subs"][i][4]>twoDays) temp.twoDays++;
+					}
+				}
 				temp.accept.push(data["subs"][i][1]);
 				temp.count++;
 			}
