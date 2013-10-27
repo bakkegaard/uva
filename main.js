@@ -15,7 +15,44 @@ function isInPersons(name){
 }
 
 function updateLivefeed(){
-	var start="<table id=\"livetable\" class=\"table table-striped\"> <tr> <th>Problemt Title</th> <th>Name</th> <th>Verdict</th> <th>Lang</th> <th>Time</th></tr>", end="</table>";
+	
+	livefeed.sort(function(a,b){return b.id-a.id});
+
+	var start="<table id=\"livetable\" class=\"table table-striped\"> <tr> <th>#</th> <th>Problemt Title</th> <th>Name</th> <th>Verdict</th> <th>Lang</th> <th>Time</th></tr>", end="</table>";
+
+
+	for(var i=0;i<livefeed.length;i++){
+
+		start+= "<tr>";
+
+		start+="<td>";
+		start+= livefeed[i].id;
+		start+="</td>";
+		
+		start+="<td>";
+		start+=livefeed[i].problemid;
+		start+="</td>";
+
+		start+="<td>";
+		start+= livefeed[i].name;
+		start+="</td>";
+
+		start+="<td>";
+		start+= livefeed[i].verdict;
+		start+="</td>";
+
+		start+="<td>";
+		start+= livefeed[i].language;
+		start+="</td>";
+
+		start+="<td>";
+		start+= livefeed[i].time;
+		start+="</td>";
+
+		start+="</tr>";
+	}
+
+	$("#livetable").remove();
 
 	start+=end;
 	$("#livefeed").append(start);
@@ -131,10 +168,19 @@ function buildPerson(data, id){
 
 	//Call update function to build the table again
 	update();
+	
+	for(var i=0;i<data["subs"].length;i++){
+		var sub= {};
+		sub.name=data["name"];
+		sub.id= data["subs"][i][0];
+		sub.problemid= data["subs"][i][1];
+		sub.verdict= data["subs"][i][2];
+		sub.language= data["subs"][i][5];
+		sub.time= data["subs"][i][4];
+		livefeed.push(sub);
+	}
 
-	var sub= {};
-
-
+	updateLivefeed();
 }
 
 function getData(username){
