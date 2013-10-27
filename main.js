@@ -69,7 +69,7 @@ function update(){
 	$("#table").remove();
 
 	//Create new
-	$("#input").after(start);
+	$("#scoreboard").append(start);
 }
 
 function buildPerson(data, id){
@@ -156,7 +156,15 @@ for(var i=0;i<usernames.length;i++){
 	getData(usernames[i]);
 }
 
+
 $(function(){
+
+	//Make tabs work
+	$('#myTab a').click(function (e) {
+	  e.preventDefault()
+	  $(this).tab('show')
+	})
+
 	//If enter is pressed when courser is in the input field
 	$("#input").keydown(function (e) {
     if (e.keyCode == 13) {
