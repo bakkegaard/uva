@@ -4,12 +4,22 @@ var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg"
 //Array for persons
 var persons= new Array();
 
+var livefeed= new Array();
+
 function isInPersons(name){
 	for(var i=0;i<persons.length;i++){
 		//console.log(p["name"] + " "+ name);
 		if(persons[i]["userName"]===name) return true;
 	}
 	return false;
+}
+
+function updateLivefeed(){
+	var start="<table id=\"livetable\" class=\"table table-striped\"> <tr> <th>Problemt Title</th> <th>Name</th> <th>Verdict</th> <th>Lang</th> <th>Time</th></tr>", end="</table>";
+
+	start+=end;
+	$("#livefeed").append(start);
+
 }
 
 function update(){
@@ -122,6 +132,9 @@ function buildPerson(data, id){
 	//Call update function to build the table again
 	update();
 
+	var sub= {};
+
+
 }
 
 function getData(username){
@@ -158,6 +171,8 @@ for(var i=0;i<usernames.length;i++){
 
 
 $(function(){
+
+	updateLivefeed();
 
 	//Make tabs work
 	$('#myTab a').click(function (e) {
