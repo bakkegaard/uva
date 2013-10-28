@@ -58,11 +58,20 @@ function isInPersons(name){
 
 function updateLivefeed(){
 	
+	//Make sure to sort the entrys in right order
 	livefeed.sort(function(a,b){return b.id-a.id});
 
+	//copy object
 	var livefeedTable = jQuery.extend(true, {}, Table);
-	livefeedTable.Table(["#","Problem Title","name","verdict","Lang","Time"], "livetable", ["table", "table-striped"]);
 
+	//create table
+	livefeedTable.Table(
+			["#","Problem Title","name","verdict","Lang","Time"], 
+			"livetable", 
+			["table", "table-striped"]
+	);
+
+	//add entrys
 	for(var i=0;i<livefeed.length;i++){
 		var arr = new Array();
 
@@ -82,8 +91,10 @@ function updateLivefeed(){
 
 	}
 
+	//remove old table
 	$("#livetable").remove();
 
+	//make new
 	$("#livefeed").append(livefeedTable.toHTML());
 
 }
