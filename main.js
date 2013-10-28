@@ -1,3 +1,44 @@
+var table= {
+	html : "",
+	endMissing : false,
+		size : 0,
+	table: function(headerArray,tableid, classArray){
+		size= headerArray.length;
+		html+="<table";	
+		html+="id=\""+ tableid + " \" ";
+		html+="class=\"";
+		for(var i=0;i<classArray.length;i++){
+			html+= classArray[i];
+		}
+		html+="\" >";
+		
+		html+="<tr>";
+		for(var i=0;i<headerArray.length;i++){
+			html+= "<th>";
+			html+= headerArray[i];
+			html+= "</th>";
+		}
+		html+="</tr>";
+	},
+	addEntry: function(entryArray){
+
+		html+="<tr>";
+
+		for(var i=0;i<size;i++){
+			html+= "<td>";
+			if(i<entryArray) html+= entryArray[i];
+			html+= "</td>";
+		}
+		
+		html+="</tr>";
+	},
+	toHTML: function(){
+		if(endMissing) html+="</table>";
+		return html;
+	}
+
+}
+
 //Array for persons to be looked up at init
 var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail");
 
