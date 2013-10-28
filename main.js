@@ -1,40 +1,41 @@
-var table= {
+var Table= {
 	html : "",
 	endMissing : false,
 		size : 0,
-	table: function(headerArray,tableid, classArray){
-		size= headerArray.length;
-		html+="<table";	
-		html+="id=\""+ tableid + " \" ";
-		html+="class=\"";
-		for(var i=0;i<classArray.length;i++){
-			html+= classArray[i];
-		}
-		html+="\" >";
+	Table: function(headerArray,tableid, classArray){
 		
-		html+="<tr>";
-		for(var i=0;i<headerArray.length;i++){
-			html+= "<th>";
-			html+= headerArray[i];
-			html+= "</th>";
+		size= headerArray.length;
+		this.html+="<table ";	
+		this.html+="id=\""+ tableid + "\"";
+		this.html+="class=\"";
+		for(var i=0;i<classArray.length;i++){
+			this.html+= classArray[i] + " ";
 		}
-		html+="</tr>";
+		this.html+="\" >";
+		
+		this.html+="<tr>";
+		for(var i=0;i<headerArray.length;i++){
+			this.html+= "<th>";
+			this.html+= headerArray[i];
+			this.html+= "</th>";
+		}
+		this.html+="</tr>";
 	},
 	addEntry: function(entryArray){
-
-		html+="<tr>";
+		console.log("yolo");
+		this.html+="<tr>";
 
 		for(var i=0;i<size;i++){
-			html+= "<td>";
-			if(i<entryArray) html+= entryArray[i];
-			html+= "</td>";
+			this.html+= "<td>";
+			if(i<entryArray.length) this.html+= entryArray[i];
+			this.html+= "</td>";
 		}
 		
-		html+="</tr>";
+		this.html+="</tr>";
 	},
 	toHTML: function(){
-		if(endMissing) html+="</table>";
-		return html;
+		if(this.endMissing) this.html+="</table>";
+		return this.html;
 	}
 
 }
@@ -59,44 +60,31 @@ function updateLivefeed(){
 	
 	livefeed.sort(function(a,b){return b.id-a.id});
 
-	var start="<table id=\"livetable\" class=\"table table-striped\"> <tr> <th>#</th> <th>Problemt Title</th> <th>Name</th> <th>Verdict</th> <th>Lang</th> <th>Time</th></tr>", end="</table>";
-
+	var livefeedTable = jQuery.extend(true, {}, Table);
+	livefeedTable.Table(["#","Problem Title","name","verdict","Lang","Time"], "livetable", ["table", "table-striped"]);
 
 	for(var i=0;i<livefeed.length;i++){
+		var arr = new Array();
 
-		start+= "<tr>";
-
-		start+="<td>";
-		start+= livefeed[i].id;
-		start+="</td>";
+		arr.push(livefeed[i].id);
 		
-		start+="<td>";
-		start+=livefeed[i].problemid;
-		start+="</td>";
+		arr.push(livefeed[i].problemid);
 
-		start+="<td>";
-		start+= livefeed[i].name;
-		start+="</td>";
+		arr.push( livefeed[i].name);
 
-		start+="<td>";
-		start+= livefeed[i].verdict;
-		start+="</td>";
+		arr.push( livefeed[i].verdict);
 
-		start+="<td>";
-		start+= livefeed[i].language;
-		start+="</td>";
+		arr.push( livefeed[i].language);
 
-		start+="<td>";
-		start+= livefeed[i].time;
-		start+="</td>";
+		arr.push( livefeed[i].time);
 
-		start+="</tr>";
+		livefeedTable.addEntry(arr);
+
 	}
 
 	$("#livetable").remove();
 
-	start+=end;
-	$("#livefeed").append(start);
+	$("#livefeed").append(livefeedTable.toHTML());
 
 }
 
