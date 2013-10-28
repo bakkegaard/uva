@@ -22,7 +22,6 @@ var Table= {
 		this.html+="</tr>";
 	},
 	addEntry: function(entryArray){
-		console.log("yolo");
 		this.html+="<tr>";
 
 		for(var i=0;i<size;i++){
@@ -105,11 +104,17 @@ function update(){
 
 	var currentTime= new Date().getTime();
 
-	//the begining of the table
-	var start="<table id=\"table\" class=\"table table-striped\"> <tr> <th>#</th> <th>Name</th> <th>Last accepted</th> <th>Score</th> <th>2d</th> <th>7d</th><th>31d</th></tr>", end="</table>";
+	var scoreboardTable= jQuery.extend(true,{},Table);
+	scoreboardTable.Table(
+		["#","Name","Last Accepted","Score","2d","7d","31d"],
+		"scoreboardTable",
+		["table","table-striped"]);
+
 
 	//Forloop that runs through every person on the persons array, and build an entry in the table
 	for(var i=0;i<persons.length;i++){
+
+		var arr= new Array();
 
 		//variable for last accepted
 		var daysAgo= Math.floor(((currentTime/1000)-persons[i].lastSubmission)/(60*60*24))
@@ -117,46 +122,24 @@ function update(){
 		//make sure not negative
 		if(daysAgo<0) daysAgo= 0;
 
-		start+= "<tr>";
+			
+		arr.push(i+1);
+		arr.push("<a target=\"_blank\" href=\"http://uhunt.felix-halim.net/id/" + persons[i]["id"] + "\">" + persons[i]["userName"] + " ("+persons[i]["name"]+")</a>");
+	arr.push(daysAgo + " days ago");
+	arr.push(persons[i]["count"]);
+	arr.push(persons[i]["twoDays"]);
+	arr.push(persons[i]["week"]);
+	arr.push(persons[i]["month"]);
+
+	scoreboardTable.addEntry(arr);
 		
-		start+= "<td>";
-		start+= i+1;
-		start+= "</td>";
-
-		start+= "<td>";
-		start+= "<a target=\"_blank\" href=\"http://uhunt.felix-halim.net/id/" + persons[i]["id"] + "\">" + persons[i]["userName"] + " ("+persons[i]["name"]+")</a>";
-		start+= "</td>";
-
-		start+= "<td>";
-		start+=  daysAgo + " days ago"; 
-		start+= "</td>";
-
-		start+= "<td>";
-		start+= persons[i]["count"];
-		start+= "</td>";
-
-		start+= "<td>";
-		start+= persons[i]["twoDays"];
-		start+="</td>";
-
-		start+= "<td>";
-		start+= persons[i]["week"];
-		start+="</td>";
-
-		start+= "<td>";
-		start+= persons[i]["month"];
-		start+="</td>";
-		
-		start+="</tr>";
 	}
 
-	start+= end;
-
 	//Remove old table
-	$("#table").remove();
+	$("#scoreboardTable").remove();
 
 	//Create new
-	$("#scoreboard").append(start);
+	$("#scoreboard").append(scoreboardTable.toHTML());
 }
 
 function buildPerson(data, id){
