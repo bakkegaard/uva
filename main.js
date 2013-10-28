@@ -1,3 +1,6 @@
+//Array for persons to be looked up at init
+var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail");
+
 var Table= {
 	html : "",
 	endMissing : false,
@@ -39,23 +42,10 @@ var Table= {
 
 }
 
-//Array for persons to be looked up at init
-var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail");
-
-//Array for persons
-var persons= new Array();
-
-var livefeed= new Array();
-
-function isInPersons(name){
-	for(var i=0;i<persons.length;i++){
-		//console.log(p["name"] + " "+ name);
-		if(persons[i]["userName"]===name) return true;
-	}
-	return false;
-}
 
 function updateLivefeed(){
+
+	var livefeed=data.getLivefeed();
 	
 	//Make sure to sort the entrys in right order
 	livefeed.sort(function(a,b){return b.id-a.id});
@@ -98,8 +88,9 @@ function updateLivefeed(){
 
 }
 
-function update(){
+function updateScoreboard(){
 	//Sort the array with regards to the accept count
+	var persons= data.getPersons();
 	persons.sort(function(a,b){return b.count-a.count});
 
 	var currentTime= new Date().getTime();
@@ -142,7 +133,28 @@ function update(){
 	$("#scoreboard").append(scoreboardTable.toHTML());
 }
 
-function buildPerson(data, id){
+
+//Array for persons
+var data={
+	persons: Array(),
+	livefeed: Array(),
+
+	getPersons: function(){
+		return this.persons;
+	},
+
+	getLivefeed: function(){
+		return this.livefeed;
+	},
+
+	isInPersons: function(name){
+		for(var i=0;i<this.persons.length;i++){
+			//console.log(p["name"] + " "+ name);
+			if(this.persons[i]["userName"]===name) return true;
+		}
+		return false;
+		},
+	buildPerson: function (data, id){
 	//Create empty object
 	var temp={};
 
@@ -187,10 +199,10 @@ function buildPerson(data, id){
 	}
 
 	//Add newly created person to the persons array
-	persons.push(temp);
+	this.persons.push(temp);
 
 	//Call update function to build the table again
-	update();
+	updateScoreboard();
 	
 	for(var i=0;i<data["subs"].length;i++){
 		var sub= {};
@@ -200,20 +212,27 @@ function buildPerson(data, id){
 		sub.verdict= data["subs"][i][2];
 		sub.language= data["subs"][i][5];
 		sub.time= data["subs"][i][4];
-		livefeed.push(sub);
+		this.livefeed.push(sub);
 	}
 
 	updateLivefeed();
-}
+},
+	run: function(){
+		for(var i=0;i<usernames.length;i++){
+			this.getData(usernames[i]);
+		}
+	},
 
-function getData(username){
 
-	if(isInPersons(username)) return;
+	getData: function (username){
+
+	if(this.isInPersons(username)) return;
 
 	//URL for getting user id
 	var s="http://uhunt.felix-halim.net/api/uname2uid/"+ username;
 
 	//Make ajax call, getting id
+	var that=this;
 	$.ajax({
 		url: s
 		}).done(function(id){
@@ -227,21 +246,15 @@ function getData(username){
 			}).done(function ( data ) {
 
 				//When info is returned, call buildPerson on info
-				buildPerson(data, id);
+				that.buildPerson(data, id);
 			})
 		})
-};
+	}
 
-
-//Add persons from username array
-for(var i=0;i<usernames.length;i++){
-	getData(usernames[i]);
 }
-
 
 $(function(){
 
-	updateLivefeed();
 
 	//Make tabs work
 	$('#myTab a').click(function (e) {
@@ -259,4 +272,6 @@ $(function(){
 		 $("#input").val("");
     }
 	});
+
+	data.run();
 })
