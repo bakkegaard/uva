@@ -91,6 +91,7 @@ function updateLivefeed(){
 function updateScoreboard(){
 	//Sort the array with regards to the accept count
 	var persons= data.getPersons();
+	
 	persons.sort(function(a,b){return b.count-a.count});
 
 	var currentTime= new Date().getTime();
@@ -147,6 +148,13 @@ var data={
 		return this.livefeed;
 	},
 
+	getPersonIndex:function(username){
+		for(var i=0;i<this.persons.length;i++){
+			if(this.persons[i]["userName"]===username) return i;
+		}
+		return -1;
+	},
+
 	isInPersons: function(name){
 		for(var i=0;i<this.persons.length;i++){
 			//console.log(p["name"] + " "+ name);
@@ -155,68 +163,70 @@ var data={
 		return false;
 		},
 	buildPerson: function (data, id){
-	//Create empty object
-	var temp={};
+		//Create empty object
+		var temp={};
 
-	var currentTime= new Date().getTime()/1000;
+		var currentTime= new Date().getTime()/1000;
 
-	var twoDays= (currentTime)-(60*60*24*2)
-	var week= (currentTime)-(60*60*24*7)
-	var month= (currentTime)-(60*60*24*31)
+		var twoDays= (currentTime)-(60*60*24*2)
+		var week= (currentTime)-(60*60*24*7)
+		var month= (currentTime)-(60*60*24*31)
 
-	temp.name= data["name"];
-	temp.userName= data["uname"];
-	temp.accept= new Array()
-	temp.count= 0;
-	temp.vissible= true;
-	temp.id= id;
-	temp.lastSubmission=0;
-	temp.twoDays=0;
-	temp.week=0;
-	temp.month=0;
+		temp.name= data["name"];
+		temp.ready= true;
+		temp.userName= data["uname"];
+		temp.accept= new Array()
+		temp.count= 0;
+		temp.vissible= true;
+		temp.id= id;
+		temp.lastSubmission=0;
+		temp.twoDays=0;
+		temp.week=0;
+		temp.month=0;
 
-	//Run through the JSON and build an array of acceptet submissions
-	for(var i=0;i< data["subs"].length;i++){
-		if(data["subs"][i][2]===90){
-			
-			//find last acceptet submission
-			temp.lastSubmission= Math.max(data["subs"][i][4],temp.lastSubmission);
+		//Run through the JSON and build an array of acceptet submissions
+		for(var i=0;i< data["subs"].length;i++){
+			if(data["subs"][i][2]===90){
+				
+				//find last acceptet submission
+				temp.lastSubmission= Math.max(data["subs"][i][4],temp.lastSubmission);
 
-			if(temp.accept.indexOf(data["subs"][i][1])==-1){
-				if(data["subs"][i][4]>month){
-					temp.month++;
-					if(data["subs"][i][4]>week){
-						temp.week++;
-						if(data["subs"][i][4]>twoDays) temp.twoDays++;
+				if(temp.accept.indexOf(data["subs"][i][1])==-1){
+					if(data["subs"][i][4]>month){
+						temp.month++;
+						if(data["subs"][i][4]>week){
+							temp.week++;
+							if(data["subs"][i][4]>twoDays) temp.twoDays++;
+						}
 					}
+					temp.accept.push(data["subs"][i][1]);
+					temp.count++;
 				}
-				temp.accept.push(data["subs"][i][1]);
-				temp.count++;
+
 			}
 
 		}
 
-	}
+		//Add newly created person to the persons array
+		var index= this.getPersonIndex(temp.userName);
+		console.log(index);
+		this.persons[index]= temp;
+		//Call update function to build the table again
+		updateScoreboard();
+		
+		for(var i=0;i<data["subs"].length;i++){
+			var sub= {};
+			sub.name=data["name"];
+			sub.id= data["subs"][i][0];
+			sub.problemid= data["subs"][i][1];
+			sub.verdict= data["subs"][i][2];
+			sub.language= data["subs"][i][5];
+			sub.time= data["subs"][i][4];
+			this.livefeed.push(sub);
+		}
 
-	//Add newly created person to the persons array
-	this.persons.push(temp);
-
-	//Call update function to build the table again
-	updateScoreboard();
-	
-	for(var i=0;i<data["subs"].length;i++){
-		var sub= {};
-		sub.name=data["name"];
-		sub.id= data["subs"][i][0];
-		sub.problemid= data["subs"][i][1];
-		sub.verdict= data["subs"][i][2];
-		sub.language= data["subs"][i][5];
-		sub.time= data["subs"][i][4];
-		this.livefeed.push(sub);
-	}
-
-	updateLivefeed();
-},
+		updateLivefeed();
+	},
 	run: function(){
 		for(var i=0;i<usernames.length;i++){
 			this.getData(usernames[i]);
@@ -226,29 +236,35 @@ var data={
 
 	getData: function (username){
 
-	if(this.isInPersons(username)) return;
+		if(this.isInPersons(username)) return;
+		else{
+			var temp= {};
+			temp.userName= username;
+			temp.ready=false;
+			this.persons.push(temp);
+		}
 
-	//URL for getting user id
-	var s="http://uhunt.felix-halim.net/api/uname2uid/"+ username;
+		//URL for getting user id
+		var s="http://uhunt.felix-halim.net/api/uname2uid/"+ username;
 
-	//Make ajax call, getting id
-	var that=this;
-	$.ajax({
-		url: s
-		}).done(function(id){
-			//When id is returned, make call for info
-
-			//URL for getting userinfo
-			var s= "http://uhunt.felix-halim.net/api/subs-user/" + id;
-
-			$.ajax({
+		//Make ajax call, getting id
+		var that=this;
+		$.ajax({
 			url: s
-			}).done(function ( data ) {
+			}).done(function(id){
+				//When id is returned, make call for info
 
-				//When info is returned, call buildPerson on info
-				that.buildPerson(data, id);
+				//URL for getting userinfo
+				var s= "http://uhunt.felix-halim.net/api/subs-user/" + id;
+
+				$.ajax({
+				url: s
+				}).done(function ( data ) {
+
+					//When info is returned, call buildPerson on info
+					that.buildPerson(data, id);
+				})
 			})
-		})
 	}
 
 }
@@ -266,7 +282,7 @@ $(function(){
 	$("#input").keydown(function (e) {
     if (e.keyCode == 13) {
 		 //Get data an add person
-       getData($("#input").val());
+       data.getData($("#input").val());
 
 		 //Remove text in field
 		 $("#input").val("");
