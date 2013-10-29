@@ -1,5 +1,5 @@
 //Array for persons to be looked up at init
-var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail");
+var usernames= new Array("bakkegaard","casper91","Bettedaniel","KentG", "peterg", "Shorttail", "gjfadsgjadsklfmn");
 
 var Table= {
 	html : "",
@@ -92,7 +92,10 @@ function updateScoreboard(){
 	//Sort the array with regards to the accept count
 	var persons= data.getPersons();
 	
-	persons.sort(function(a,b){return b.count-a.count});
+	persons.sort(function(a,b){
+		if(typeof b.count=== "undefined") return a.count;
+		else if (typeof a.count==="undefined")return b.count;
+		else return b.count-a.count});
 
 	var currentTime= new Date().getTime();
 
@@ -105,6 +108,8 @@ function updateScoreboard(){
 
 	//Forloop that runs through every person on the persons array, and build an entry in the table
 	for(var i=0;i<persons.length;i++){
+
+		if(!persons[i]["ready"]) continue;
 
 		var arr= new Array();
 
@@ -163,6 +168,8 @@ var data={
 		return false;
 		},
 	buildPerson: function (data, id){
+
+
 		//Create empty object
 		var temp={};
 
@@ -209,7 +216,6 @@ var data={
 
 		//Add newly created person to the persons array
 		var index= this.getPersonIndex(temp.userName);
-		console.log(index);
 		this.persons[index]= temp;
 		//Call update function to build the table again
 		updateScoreboard();
@@ -253,6 +259,13 @@ var data={
 			url: s
 			}).done(function(id){
 				//When id is returned, make call for info
+				
+				//Check if username exsist return and remove from array if it doesn't
+				if(id===0){
+					var index= that.getPersonIndex(username);	
+					that.persons.splice(index,1);
+					return;
+				}
 
 				//URL for getting userinfo
 				var s= "http://uhunt.felix-halim.net/api/subs-user/" + id;
