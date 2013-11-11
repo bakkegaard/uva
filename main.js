@@ -68,11 +68,11 @@ function updateLivefeed(){
 		
 		arr.push(livefeed[i].problemid);
 
-		arr.push( livefeed[i].name);
+		arr.push(livefeed[i].name);
 
 		arr.push( livefeed[i].verdict);
 
-		arr.push( livefeed[i].language);
+		arr.push(getLang(livefeed[i].language));
 
 		arr.push( livefeed[i].time);
 
@@ -87,6 +87,20 @@ function updateLivefeed(){
 	$("#livefeed").append(livefeedTable.toHTML());
 
 }
+
+//trans lang ID to string (1=ANSI C, 2=Java, 3=C++, 4=Pascal)
+function getLang(i){
+	var res;
+	switch(i)
+	{
+		case 1: res="C"; break;
+		case 2: res="Java"; break;
+		case 3: res="C++"; break;
+		case 4: res="Pascal"; break;	
+	}
+	return res;
+}
+
 
 function updateScoreboard(){
 	//Sort the array with regards to the accept count
