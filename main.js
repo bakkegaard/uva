@@ -68,13 +68,13 @@ function updateLivefeed(){
 		
 		arr.push(livefeed[i].problemid);
 
-		arr.push( livefeed[i].name);
+		arr.push(livefeed[i].name);
 
-		arr.push( livefeed[i].verdict);
+		arr.push(getVerdict(livefeed[i].verdict));
 
-		arr.push( livefeed[i].language);
+		arr.push(getLang(livefeed[i].language));
 
-		arr.push( livefeed[i].time);
+		arr.push(timestampToDate(livefeed[i].time));
 
 		livefeedTable.addEntry(arr);
 
@@ -86,6 +86,46 @@ function updateLivefeed(){
 	//make new
 	$("#livefeed").append(livefeedTable.toHTML());
 
+}
+
+//trans lang ID to string (1=ANSI C, 2=Java, 3=C++, 4=Pascal)
+function getLang(id){
+	var res;
+	switch(id)
+	{
+		case 1: res="C"; break;
+		case 2: res="Java"; break;
+		case 3: res="C++"; break;
+		case 4: res="Pascal"; break;	
+	}
+	return res;
+}
+
+//trans vedict ID to string 
+function getVerdict(id){
+	var res;
+	switch(id)
+	{
+		case 10: res="Submission error"; break;
+		case 15: res="Can't be judged"; break;
+		case 20: res="In queue"; break;	
+		case 30: res="Compile error"; break;
+		case 35: res="Restricted funtion"; break;
+		case 40: res="Runtime error"; break;
+		case 45: res="Output limit"; break;
+		case 50: res="Time limit"; break;
+		case 60: res="Memory limit"; break;
+		case 70: res="Wrong answer"; break;
+		case 80: res="PresentationE"; break;
+		case 90: res="Accepted"; break;
+	}
+	return res;
+}
+
+//trans timestamp to string
+function timestampToDate(time){
+	date = new Date(time*1000)
+	return date.toLocaleString();
 }
 
 function updateScoreboard(){
